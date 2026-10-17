@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dynamic Currency Converter — Made by Fatiaha Ansari</title>
+  <meta name="description" content="Live currency converter built with plain HTML, CSS and JavaScript." />
+  <meta property="og:title" content="Dynamic Currency Converter" />
+  <meta property="og:description" content="Live exchange rates, standalone version." />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary" />
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #1e293b;
+      --border: #334155;
+      --text: #f1f5f9;
+      --muted: #94a3b8;
+      --primary: #3b82f6;
+      --destructive: #ef4444;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 48px 16px;
+    }
+    .wrap { max-width: 560px; margin: 0 auto; }
+    h1 { font-size: 2rem; font-weight: 700; }
+    .sub { margin-top: 8px; color: var(--muted); }
+    .card {
+      margin-top: 32px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    label { display: flex; flex-direction: column; gap: 4px; font-size: 0.875rem; color: var(--muted); }
+    .field {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      padding: 10px 12px;
+      font-size: 1rem;
+    }
+    .row { display: grid; grid-template-columns: 1fr auto 1fr; align-items: end; gap: 12px; }
+    .swap {
+      background: var(--primary);
+      border: none;
+      border-radius: 50%;
+      width: 40px; height: 40px;
+      font-size: 1.1rem;
+      cursor: pointer;
+    }
+    .result {
+      background: var(--bg);
+      border-radius: 8px;
+      padding: 20px;
+      color: var(--muted);
+    }
+    .result .big { font-size: 2rem; font-weight: 700; color: var(--primary); margin-top: 4px; }
+    .result .error { color: var(--destructive); }
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+    .chip {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 6px 14px;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+    .made-by { margin-top: 48px; text-align: center; color: var(--muted); font-size: 0.875rem; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Currency Converter</h1>
+    <p class="sub">Live rates, standalone HTML version.</p>
+
+    <section class="card">
+      <label>Amount
+        <input class="field" id="amount" type="number" min="0" value="1" />
+      </label>
+      <div class="row">
+        <label>From
+          <select class="field" id="from">
+            <option value="USD">USD</option>
+            <option value="INR">INR</option>
+          </select>
+        </label>
+        <button class="swap" id="swap" aria-label="Swap" title="Swap">&#8644;</button>
+        <label>To
+          <select class="field" id="to">
+            <option value="INR">INR</option>
+            <option value="USD">USD</option>
+          </select>
+        </label>
+      </div>
+      <div class="result" id="result">Fetching rates&hellip;</div>
+    </section>
+
+    <section>
+      <h2>Concepts used</h2>
+      <div class="chips" id="chips"></div>
+    </section>
+
+    <footer class="made-by">Made by Fatiaha Ansari</footer>
+  </div>
+
+  <script>
+    var CONCEPTS = ["Components & Reusability", "Props Destructuring", "JSX & Styling", "Rendering Lists",
+      "Conditional Rendering", "Fragments", "useEffect + Dependency Array", "Async Fetching",
+      "Cleanup with AbortController"];
+    var chipsEl = document.getElementById("chips");
+    CONCEPTS.forEach(function (c) {
+      var chip = document.createElement("span");
+      chip.className = "chip";
+      chip.textContent = c;
+      chipsEl.appendChild(chip);
+    });
+
+    var amountEl = document.getElementById("amount");
+    var fromEl = document.getElementById("from");
+    var toEl = document.getElementById("to");
+    var resultEl = document.getElementById("result");
+    var rates = {};
+
+    function render() {
+      var amount = Number(amountEl.value) || 0;
+      var from = fromEl.value;
+      var to = toEl.value;
+      if (!rates[to]) {
+        resultEl.innerHTML = '<span class="error">Could not load rates</span>';
+        return;
+      }
+      resultEl.innerHTML =
+        amount + " " + from + " =" +
+        '<div class="big">' + (amount * rates[to]).toFixed(4) + " " + to + "</div>";
+    }
+
+    function loadRates() {
+      var from = fromEl.value;
+      resultEl.textContent = "Fetching rates\u2026";
+      fetch("https://open.er-api.com/v6/latest/" + from)
+        .then(function (res) { return res.json(); })
+        .then(function (data) {
+          if (data.result !== "success") throw new Error("Could not load rates");
+          rates = data.rates;
+          populate(from);
+          render();
+        })
+        .catch(function () {
+          resultEl.innerHTML = '<span class="error">Could not load rates</span>';
+        });
+    }
+
+    function populate(from) {
+      var codes = Object.keys(rates);
+      if (!codes.length) codes = [from, toEl.value];
+      [fromEl, toEl].forEach(function (sel) {
+        var current = sel.value;
+        sel.innerHTML = "";
+        codes.forEach(function (c) {
+          var opt = document.createElement("option");
+          opt.value = c;
+          opt.textContent = c;
+          sel.appendChild(opt);
+        });
+        sel.value = current;
+      });
+    }
+
+    amountEl.addEventListener("input", render);
+    toEl.addEventListener("change", render);
+    fromEl.addEventListener("change", loadRates);
+    document.getElementById("swap").addEventListener("click", function () {
+      var f = fromEl.value;
+      fromEl.value = toEl.value;
+      toEl.value = f;
+      loadRates();
+    });
+
+    loadRates();
+  </script>
+</body>
+</html>

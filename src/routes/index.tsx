@@ -106,6 +106,10 @@ function Index() {
             {CONCEPTS.map((c) => <Fragment key={c}><span className="chip">{c}</span></Fragment>)}
           </div>
         </section>
+
+        <footer className="mt-12 text-center text-sm text-muted-foreground">
+          Made by Fatiaha Ansari
+        </footer>
       </div>
     </main>
   );
