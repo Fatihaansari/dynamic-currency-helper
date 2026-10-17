@@ -58,7 +58,7 @@ Make sure you have Node.js and npm installed.
 
 ## 🌍 Live Demo
 
-dynamic-currency-helper-1osywlayy-fatihaansari.vercel.app
+https://dynamic-currency-helper.vercel.app/
 
 ## 👩‍💻 Author
 
