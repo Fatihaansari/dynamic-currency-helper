@@ -26,10 +26,13 @@
       color: var(--text);
       min-height: 100vh;
       padding: 48px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
-    .wrap { max-width: 560px; margin: 0 auto; }
-    h1 { font-size: 2rem; font-weight: 700; }
-    .sub { margin-top: 8px; color: var(--muted); }
+    .wrap { max-width: 560px; width: 100%; margin: 0 auto; }
+    h1 { font-size: 2rem; font-weight: 700; text-align: center; }
+
     .card {
       margin-top: 32px;
       background: var(--card);
@@ -81,7 +84,8 @@
 <body>
   <div class="wrap">
     <h1>Currency Converter</h1>
-    <p class="sub">Live rates, standalone HTML version.</p>
+
+
 
     <section class="card">
       <label>Amount
