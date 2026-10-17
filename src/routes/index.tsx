@@ -76,10 +76,10 @@ function Index() {
   const result = amount * (rates[to] ?? 0);
 
   return (
-    <main className="min-h-screen bg-background px-4 py-12">
-      <div className="mx-auto max-w-xl">
-        <h1 className="text-4xl font-bold text-foreground">Currency Converter</h1>
-        <p className="mt-2 text-muted-foreground">Live rates, built with React fundamentals.</p>
+    <main className="flex min-h-screen items-center justify-center bg-background px-4 py-12">
+      <div className="w-full max-w-xl">
+        <h1 className="text-center text-4xl font-bold text-foreground">Currency Converter</h1>
+
 
         <section className="card mt-8 space-y-5">
           <label className="flex flex-col gap-1 text-sm text-muted-foreground">
